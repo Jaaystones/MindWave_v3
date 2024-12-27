@@ -61,7 +61,7 @@ const updateFrequencies = () => {
 const sweepStart = ref(1); // Minimum binaural frequency
 const sweepEnd = ref(50); // Maximum binaural frequency
 const sweepInterval = ref<number | null>(null);
-const sweepSpeed = ref(500); // Sweep speed in milliseconds
+//const sweepSpeed = ref(500); Sweep speed in milliseconds
 const isSweeping = ref(false);
 const timerDuration = ref(0); // Timer duration in seconds
 const timerInterval = ref<number | null>(null); // Reference to the timer interval
@@ -84,8 +84,12 @@ const deactivateGain = () => {
 
   // Optionally suspend the audio context after the fade-out
   setTimeout(() => {
+  if (audioContext.value) {
     audioContext.value.suspend();
-  }, 500);
+  } else {
+    console.warn("audioContext.value is null or undefined during suspend.");
+  }
+}, 500);
 };
 
 const stopSweep = () => {
@@ -146,21 +150,21 @@ const startSweep = () => {
   }, dynamicSweepSpeed);
 };
 
-const stopTimer = () => {
-  // Clear the timer interval
-  if (timerInterval.value) {
-    window.clearInterval(timerInterval.value);
-    timerInterval.value = null;
-  }
-};
+// const stopTimer = () => {
+//   // Clear the timer interval
+//   if (timerInterval.value) {
+//     window.clearInterval(timerInterval.value);
+//     timerInterval.value = null;
+//   }
+// };
 
 
-const updateVolume = () => {
+function updateVolume() {
   if (!gainNode.value || !audioContext.value) return;
 
   const currentTime = audioContext.value.currentTime;
   gainNode.value.gain.linearRampToValueAtTime(volume.value, currentTime + 0.2);
-};
+}
 
 watch([baseFrequency, frequencyDiff], () => {
   updateFrequencies();
